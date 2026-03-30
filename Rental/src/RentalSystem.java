@@ -1,6 +1,9 @@
 import java.util.List;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class RentalSystem {
 	// initialize instance
@@ -19,16 +22,20 @@ public class RentalSystem {
 
     public void addVehicle(Vehicle vehicle) {
         vehicles.add(vehicle);
+        saveVehicle(vehicle); // Part 1 Question 2
     }
 
     public void addCustomer(Customer customer) {
         customers.add(customer);
+        saveCustomer(customer); // Part 1 Question 2
     }
 
     public void rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
         if (vehicle.getStatus() == Vehicle.VehicleStatus.Available) {
             vehicle.setStatus(Vehicle.VehicleStatus.Rented);
             rentalHistory.addRecord(new RentalRecord(vehicle, customer, date, amount, "RENT"));
+            saveRecord(rentalHistory.getRentalHistory().get(rentalHistory.getRentalHistory().size()-1)); // Part 1 Question 2
+            update(); // Part 1 Question 2 / update vehicles.txt
             System.out.println("Vehicle rented to " + customer.getCustomerName());
         }
         else {
@@ -40,6 +47,8 @@ public class RentalSystem {
         if (vehicle.getStatus() == Vehicle.VehicleStatus.Rented) {
             vehicle.setStatus(Vehicle.VehicleStatus.Available);
             rentalHistory.addRecord(new RentalRecord(vehicle, customer, date, extraFees, "RETURN"));
+            saveRecord(rentalHistory.getRentalHistory().get(rentalHistory.getRentalHistory().size()-1)); // Part 1 Question 2
+            update(); // Part 1 Question 2 / update vehicles.txt
             System.out.println("Vehicle returned by " + customer.getCustomerName());
         }
         else {
@@ -130,5 +139,47 @@ public class RentalSystem {
             if (c.getCustomerId() == id)
                 return c;
         return null;
+    }
+    
+    // Part 1 Question 2 / save a single vehicle by appending it into vehicles.txt
+    private void saveVehicle(Vehicle vehicle) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("vehicles.txt", true))) {
+            writer.write(vehicle.getLicensePlate() + "," + vehicle.getMake() + "," + vehicle.getModel() + "," + vehicle.getYear() + "," + vehicle.getStatus());
+            writer.newLine();
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    } // saveVehicle
+    
+    // Part 1 Question 2 / save a single customer by appending it into customers.txt
+    private void saveCustomer(Customer customer) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("customers.txt", true))) {
+            writer.write(customer.getCustomerId() + "," + customer.getCustomerName());
+            writer.newLine();
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    } // saveCustomer
+    
+    // Part 1 Question 2 / save a rental record by appending it into rental_records.txt
+    private void saveRecord(RentalRecord record) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("rental_records.txt", true))) {
+            writer.write(record.getRecordType() + "," + record.getVehicle().getLicensePlate() + "," + record.getCustomer().getCustomerId() + "," + record.getRecordDate() + "," + record.getTotalAmount());
+            writer.newLine();
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    } // saveRecord
+    
+    // update vehicle.txt for renting and returning
+    private void update() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("vehicles.txt", false))) {
+            for (Vehicle v : vehicles) {
+                writer.write(v.getLicensePlate() + "," + v.getMake() + "," + v.getModel() + "," + v.getYear() + "," + v.getStatus());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 }
