@@ -12,7 +12,12 @@ public class RentalSystem {
     private List<Customer> customers = new ArrayList<>();
     private RentalHistory rentalHistory = new RentalHistory();
     
-    // get instance method 
+    // Part 1 Question 3 / call in constructor
+    private RentalSystem() {
+        loadData(); // call to loadData
+    }
+    
+    // get instance method / Part 1 Question 1
     public static RentalSystem getInstance() {
         if (instance == null) {
             instance = new RentalSystem();
@@ -181,5 +186,40 @@ public class RentalSystem {
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
         }
-    }
+    } // update
+    
+    // Part 1 Question 3
+    private void loadData() {
+        // load vehicles
+        try (java.util.Scanner sc = new java.util.Scanner(new java.io.File("vehicles.txt"))) {
+            while (sc.hasNextLine()) {
+                String[] parts1 = sc.nextLine().split(",");
+                Vehicle v = new Car(parts1[1], parts1[2], Integer.parseInt(parts1[3]), 4); // load everything as a car / temporary
+                v.setLicensePlate(parts1[0]);
+                v.setStatus(Vehicle.VehicleStatus.valueOf(parts1[4]));
+                vehicles.add(v);
+            }
+        } catch (java.io.FileNotFoundException e) { }
+
+        // load the customers
+        try (java.util.Scanner sc = new java.util.Scanner(new java.io.File("customers.txt"))) {
+            while (sc.hasNextLine()) {
+                String[] parts2 = sc.nextLine().split(",");
+                customers.add(new Customer(Integer.parseInt(parts2[0]), parts2[1]));
+            }
+        } catch (java.io.FileNotFoundException e) { }
+
+        // load the rental records
+        try (java.util.Scanner sc = new java.util.Scanner(new java.io.File("rental_records.txt"))) {
+            while (sc.hasNextLine()) {
+                String[] parts3 = sc.nextLine().split(",");
+                Vehicle v = findVehicleByPlate(parts3[1]);
+                Customer c = findCustomerById(Integer.parseInt(parts3[2]));
+                if (v != null && c != null) {
+                    rentalHistory.addRecord(new RentalRecord(v, c, java.time.LocalDate.parse(parts3[3]), Double.parseDouble(parts3[4]), parts3[0]));
+                }
+            }
+        } catch (java.io.FileNotFoundException e) { }
+    } // loadData
+    
 }
