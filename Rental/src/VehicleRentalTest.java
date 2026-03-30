@@ -6,7 +6,7 @@ class VehicleRentalTest {
 	// Part 2 Question 1
 	@Test
     void testLicensePlate() {
-        // VALID plates
+        // valid
         Vehicle v1 = new Car("Toyota", "Corolla", 2019, 4);
         v1.setLicensePlate("AAA100");
         assertEquals("AAA100", v1.getLicensePlate());
@@ -20,8 +20,7 @@ class VehicleRentalTest {
         assertEquals("ZZZ999", v3.getLicensePlate());
 
 
-        // INVALID plates (should throw exception)
-
+        // invalid
         Vehicle v4 = new Car("Test", "Car", 2020, 5);
         assertThrows(IllegalArgumentException.class, () -> {
             v4.setLicensePlate("");
@@ -41,6 +40,31 @@ class VehicleRentalTest {
         assertThrows(IllegalArgumentException.class, () -> {
             v7.setLicensePlate("ZZZ99");
         });
-    }
+    } // testLicensePlate
+	
+	@Test
+	void testRentAndReturnVehicle() {
+	    // object declaration
+	    Vehicle v = new Car("Toyota", "Corolla", 2019, 4);
+	    v.setLicensePlate("AAA111");
+	    Customer c = new Customer(1, "George");
+
+	    assertEquals(Vehicle.VehicleStatus.Available, v.getStatus()); // initial
+	    RentalSystem system = RentalSystem.getInstance();
+
+	    // rent
+	    boolean rentSuccess = system.rentVehicle(v, c, java.time.LocalDate.now(), 100);
+	    assertTrue(rentSuccess);
+	    assertEquals(Vehicle.VehicleStatus.Rented, v.getStatus());
+	    boolean rentFail = system.rentVehicle(v, c, java.time.LocalDate.now(), 100);
+	    assertFalse(rentFail);
+
+	    // return
+	    boolean returnSuccess = system.returnVehicle(v, c, java.time.LocalDate.now(), 0);
+	    assertTrue(returnSuccess);
+	    assertEquals(Vehicle.VehicleStatus.Available, v.getStatus());
+	    boolean returnFail = system.returnVehicle(v, c, java.time.LocalDate.now(), 0);
+	    assertFalse(returnFail);
+	} // testRentAndReturnVehicle
 
 }
