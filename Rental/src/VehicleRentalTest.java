@@ -1,5 +1,8 @@
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+
 
 class VehicleRentalTest {
 
@@ -42,6 +45,7 @@ class VehicleRentalTest {
         });
     } // testLicensePlate
 	
+	// Part 2 Question 2
 	@Test
 	void testRentAndReturnVehicle() {
 	    // object declaration
@@ -67,4 +71,17 @@ class VehicleRentalTest {
 	    assertFalse(returnFail);
 	} // testRentAndReturnVehicle
 
+	// Part 2 Question 3
+    @Test
+    void testSingletonRentalSystem() throws Exception {
+        // constrcutor of RentalSystem
+        Constructor<RentalSystem> constructor = RentalSystem.class.getDeclaredConstructor();
+        // check to ensure private
+        int modifiers = constructor.getModifiers();
+        assertTrue(Modifier.isPrivate(modifiers), "RentalSystem constructor is not private");
+
+        // Check that getInstance returns a non-null instance
+        RentalSystem instance = RentalSystem.getInstance();
+        assertNotNull(instance, "getInstance() doesn't return a valid RentalSystem instance");
+    }
 }

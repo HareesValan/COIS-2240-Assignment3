@@ -21,7 +21,10 @@ public abstract class Vehicle {
     }
 
     public void setLicensePlate(String plate) {
-        this.licensePlate = plate == null ? null : plate.toUpperCase();
+        if (!isValidPlate(plate)) {
+            throw new IllegalArgumentException("Wrong format");
+        }
+        this.licensePlate = plate.toUpperCase();
     }
 
     public void setStatus(VehicleStatus status) {
@@ -48,6 +51,14 @@ public abstract class Vehicle {
     		return "";
         }
         return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+    } // capitalize
+    
+    // Part 2 Question 1
+    private boolean isValidPlate(String plate) {
+        if (plate == null || plate.isEmpty()) {
+            return false;
+        }
+        return plate.matches("[A-Z]{3}[0-9]{3}");
     }
 
 }

@@ -60,6 +60,7 @@ public class VehicleRentalApp {
 		            }
                     
                     if (vehicle != null){
+                    	// Part 2 Question 1
                     	try {
                     	    vehicle.setLicensePlate(plate);
                     	    rentalSystem.addVehicle(vehicle);
